@@ -190,14 +190,65 @@ GameManager.prototype.setup = function () {
   // Add the initial tiles
   this.addStartTiles();
 
-  this.wss.on('request', function(request) {
-    // if (!originIsAllowed(request.origin)){
-    //   request.reject();
-    //   console.log((new Date()) + ' Connection from origin ' + request.origin + ' rejected.');
-    //   return;
-    // }
+  // this.wss.on('request', function(request) {
+  //   // if (!originIsAllowed(request.origin)){
+  //   //   request.reject();
+  //   //   console.log((new Date()) + ' Connection from origin ' + request.origin + ' rejected.');
+  //   //   return;
+  //   // }
 
-    var connection = request.accept('instruction-protocol', request.origin);
+  //   var connection = request.accept('instruction-protocol', request.origin);
+  //   var index = self.connections.length;
+  //   self.connections.push(connection);
+  //   console.log((new Date()) + ' Connection accepted.');
+    
+  //   // SEND STATE
+  //   var gameState = {};
+  //   gameState.instruction = "loadGame";
+  //   gameState.score = self.score;
+  //   gameState.cells = self.grid.cells;
+  //   gameState = JSON.stringify(gameState);
+  //   connection.sendUTF(gameState);
+
+  //   connection.on('message', function(message) {
+  //     if (message.type === 'utf8'){
+  //       var data = JSON.parse(message.utf8Data);
+  //       console.log(data.instruction);
+  //       if (data.instruction == "move"){
+  //         self.move(data.direction);
+  //         data.newTile = self.newTile;
+  //         message.utf8Data = JSON.stringify(data);
+  //       } else if (data.instruction == "restart"){
+  //         self.restart();
+  //         data.cells = self.grid.cells;
+  //         message.utf8Data = JSON.stringify(data);
+  //       } else if (data.instruction == "keepPlaying"){
+  //         self.keepGoing();
+  //       }
+  //     } else if (message.type === 'binary') {
+  //       console.log('Received Binary Message of ' + message.binaryData.length + ' bytes');
+  //     }
+      
+  //     self.forEachConnection(function(connection){
+  //       if (message.type === 'utf8') {
+  //         connection.sendUTF(message.utf8Data);
+  //       }
+  //       else if (message.type === 'binary') {
+  //         console.log('Received Binary Message of ' + message.binaryData.length + ' bytes');
+  //         connection.sendBytes(message.binaryData);
+  //       }
+  //     });
+
+  //   });
+  
+  //   connection.on('close', function(reasonCode, description) {
+  //     console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
+  //     // DELETE
+  //   });
+  // });
+
+  this.wss.on('connection', function(ws) {
+    var connection = ws;
     var index = self.connections.length;
     self.connections.push(connection);
     console.log((new Date()) + ' Connection accepted.');
@@ -208,42 +259,33 @@ GameManager.prototype.setup = function () {
     gameState.score = self.score;
     gameState.cells = self.grid.cells;
     gameState = JSON.stringify(gameState);
-    connection.sendUTF(gameState);
+    connection.send(gameState);
 
     connection.on('message', function(message) {
-      if (message.type === 'utf8'){
-        var data = JSON.parse(message.utf8Data);
-        console.log(data.instruction);
-        if (data.instruction == "move"){
-          self.move(data.direction);
-          data.newTile = self.newTile;
-          message.utf8Data = JSON.stringify(data);
-        } else if (data.instruction == "restart"){
-          self.restart();
-          data.cells = self.grid.cells;
-          message.utf8Data = JSON.stringify(data);
-        } else if (data.instruction == "keepPlaying"){
-          self.keepGoing();
-        }
-      } else if (message.type === 'binary') {
-        console.log('Received Binary Message of ' + message.binaryData.length + ' bytes');
+      var data = JSON.parse(message);
+      if (data.instruction == "move"){
+        self.move(data.direction);
+        data.newTile = self.newTile;
+        message = JSON.stringify(data);
+      } else if (data.instruction == "restart"){
+        self.restart();
+        data.cells = self.grid.cells;
+        message = JSON.stringify(data);
+      } else if (data.instruction == "keepPlaying"){
+        self.keepGoing();
       }
       
       self.forEachConnection(function(connection){
-        if (message.type === 'utf8') {
-          connection.sendUTF(message.utf8Data);
-        }
-        else if (message.type === 'binary') {
-          console.log('Received Binary Message of ' + message.binaryData.length + ' bytes');
-          connection.sendBytes(message.binaryData);
-        }
+        connection.send(message);
       });
+      console.log(message);
 
     });
-  
-    connection.on('close', function(reasonCode, description) {
-      console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
-      // DELETE
+
+    connection.on('close', function() {
+      console.log((new Date()) + ' Peer disconnected.');
+      var test = self.connections.pop(connection);
+      console.log(self.connections.length);
     });
   });
 

@@ -9,10 +9,13 @@ var bodyParser = require('body-parser');
 var routes = require('./routes');
 var users = require('./routes/user');
 
-var WebSocketServer = require('websocket').server;
+// var WebSocketServer = require('websocket').server;
+var WebSocketServer = require('ws').Server;
 var GameManager = require('./game_manager').GameManager;
 
 var app = express();
+
+var port = process.env.PORT || 5000;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -27,6 +30,7 @@ app.use(require('stylus').middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(app.router);
 
+// app.use(express.static(__dirname + '/'));
 app.get('/', routes.index);
 
 /// catch 404 and forwarding to error handler
@@ -58,25 +62,33 @@ app.use(function(err, req, res, next) {
     });
 });
 
-var server = http.createServer(function(request, response){
-    console.log((new Date()) + ' Received request for ' + request.url);
-    response.writeHead(404);
-    response.end();
-});
+// var server = http.createServer(function(request, response){
+//     console.log((new Date()) + ' Received request for ' + request.url);
+//     response.writeHead(404);
+//     response.end();
+// });
 
-server.listen(8080, function() {
-    console.log((new Date()) + ' Server is listening on port 8080');
-});
+// server.listen(8080, function() {
+//     console.log((new Date()) + ' Server is listening on port 8080');
+// });
 
-wsServer = new WebSocketServer({
-    httpServer : server,
-    autoAcceptConnections : false,
-});
+// wsServer = new WebSocketServer({
+//     httpServer : server,
+//     autoAcceptConnections : false,
+// });
 
-function originIsAllowed(origin) {
-    return true;
-}
+// function originIsAllowed(origin) {
+//     return true;
+// }
 
-var gm = new GameManager(4, wsServer);
+var server = http.createServer(app);
+server.listen(port);
+
+console.log('Server is listening on port %d', port);
+
+var wss = new WebSocketServer({server: server});
+console.log('websocket server created');
+
+var gm = new GameManager(4, wss);
 
 module.exports = app;

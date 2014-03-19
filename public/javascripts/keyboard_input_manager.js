@@ -50,7 +50,9 @@ KeyboardInputManager.prototype.listen = function () {
           direction : mapped,
         }
         var message = JSON.stringify(data);
-        self.ws.send(message);
+        if (self.ws && self.ws.readyState == 1){
+          self.ws.send(message);  
+        }
       }
 
       if (event.which === 32) self.restart.bind(self)(event);
