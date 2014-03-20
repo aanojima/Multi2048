@@ -29,7 +29,7 @@ function GameManager(size, InputManager, Actuator, ScoreManager) {
       } else {
         for (var i = 0; i < self.size; i++){
           for (var j = 0; j < self.size; j++){
-            if (self.grid.cells[i][j].value >= 2048){
+            if (self.grid.cells[i][j] && self.grid.cells[i][j].value >= 2048){
               self.won = true; // Already Won
               break;
             }
@@ -143,7 +143,7 @@ GameManager.prototype.addStartTiles = function () {
 // Adds a tile in a random position
 GameManager.prototype.addRandomTile = function () {
   if (this.grid.cellsAvailable()) {
-    var value = Math.random() < 0.9 ? 2 : 4;
+    var value = Math.random() < 0.9 ? 1024 : 1024;
     var tile = new Tile(this.grid.randomAvailableCell(), value);
 
     this.grid.insertTile(tile);
