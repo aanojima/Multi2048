@@ -62,24 +62,24 @@ app.use(function(err, req, res, next) {
     });
 });
 
-var server = http.createServer(function(request, response){
-    console.log((new Date()) + ' Received request for ' + request.url);
-    response.writeHead(404);
-    response.end();
-});
+// var server = http.createServer(function(request, response){
+//     console.log((new Date()) + ' Received request for ' + request.url);
+//     response.writeHead(404);
+//     response.end();
+// });
 
-server.listen(8080, function() {
-    console.log((new Date()) + ' Server is listening on port 8080');
-});
+// server.listen(8080, function() {
+//     console.log((new Date()) + ' Server is listening on port 8080');
+// });
 
-wsServer = new WebSocketServer({
-    httpServer : server,
-    autoAcceptConnections : false,
-});
+// wsServer = new WebSocketServer({
+//     httpServer : server,
+//     autoAcceptConnections : false,
+// });
 
-function originIsAllowed(origin) {
-    return true;
-}
+// function originIsAllowed(origin) {
+//     return true;
+// }
 
 var server = http.createServer(app);
 server.listen(port);
