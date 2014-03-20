@@ -21,7 +21,12 @@ head
 				submit.addEventListener("submit", function(event){
 					event.preventDefault();
 					var text = document.getElementById("game_id_text").value;
-					window.location.href = "game/" + text;
+					var Exp = /^[0-9a-z]+$/;
+					if(!text.match(Exp)){
+						alert("Only alphanumeric characters please. ");
+					} else {
+						window.location.href = "multi2048.herokuapp.com/game/" + text;
+					}
 				});	
 			}
 		});
