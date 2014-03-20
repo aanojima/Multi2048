@@ -122,6 +122,7 @@ KeyboardInputManager.prototype.listen = function () {
         direction : absDx > absDy ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0),
       }
       var message = JSON.stringify(data);
+      alert(message);
       self.ws.send(message);
     }
   });
