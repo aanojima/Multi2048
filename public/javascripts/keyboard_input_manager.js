@@ -105,6 +105,7 @@ KeyboardInputManager.prototype.listen = function () {
   });
 
   gameContainer.addEventListener("touchend", function (event) {
+    alert("fire");
     if (event.touches.length > 0) return;
 
     var dx = event.changedTouches[0].clientX - touchStartClientX;
