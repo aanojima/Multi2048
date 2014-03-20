@@ -14,7 +14,7 @@
     "debug": "~0.7.4",
     "jade": "~1.3.0",
     "stylus": "0.42.3",
-    "websocket": "1.0.8"
+    "ws": "0.4.30"
   },
   "description": "Multiplayer 2048",
   "main": "app.js",
