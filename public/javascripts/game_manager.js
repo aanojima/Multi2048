@@ -2,7 +2,9 @@ var check;
 
 function GameManager(size, InputManager, Actuator, ScoreManager) {
   // var ws = new WebSocket("ws://athena.dialup.mit.edu:8080", "instruction-protocol");
-  var ws = new WebSocket("ws://localhost:5000");
+  // var ws = new WebSocket("ws://localhost:5000");
+  var ws = new WebSocket("ws://multi2048.herokuapp.com:5000");
+
   this.size         = size; // Size of the grid
   this.inputManager = new InputManager(ws);
   this.scoreManager = new ScoreManager;
