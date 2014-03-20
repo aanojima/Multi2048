@@ -89,6 +89,6 @@ console.log('Server is listening on port %d', port);
 var wss = new WebSocketServer({server: server});
 console.log('websocket server created');
 
-var gm = new GameManager(4, wss);
+// var gm = new GameManager(4, wss);
 
 module.exports = app;
