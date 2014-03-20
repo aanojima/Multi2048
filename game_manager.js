@@ -138,14 +138,13 @@ ScoreManager.prototype.set = function (score) {
   this.storage.setItem(this.key, score);
 };
 
-function GameManager(size, WebSocketServer) {
+function GameManager(game_id, size) {
+  this.id           = game_id;
   this.size         = size; // Size of the grid
   this.scoreManager = new ScoreManager();
 
   this.startTiles   = 2;
   this.newTile      = null;
-
-  this.wss = WebSocketServer;
 
   this.setup();
 
@@ -169,11 +168,11 @@ GameManager.prototype.isGameTerminated = function () {
   }
 };
 
-GameManager.prototype.forEachClient = function(callback) {
-  for (var i = 0; i < this.wss.clients.length; i++){
-    callback(this.wss.clients[i]);
-  }
-}
+// GameManager.prototype.forEachClient = function(callback) {
+//   for (var i = 0; i < this.wss.clients.length; i++){
+//     callback(this.wss.clients[i]);
+//   }
+// }
 
 GameManager.prototype.setup = function () {
 
@@ -189,43 +188,52 @@ GameManager.prototype.setup = function () {
   // Add the initial tiles
   this.addStartTiles();
 
-  this.wss.on('connection', function(ws) {
-    var connection = ws;
-    console.log((new Date()) + ' Connection accepted.');
+  // this.wss.on('connection', function(ws) {
+  //   var connection = ws;
+  //   console.log((new Date()) + ' Connection accepted.');
     
-    // SEND STATE
-    var gameState = {};
-    gameState.instruction = "loadGame";
-    gameState.score = self.score;
-    gameState.cells = self.grid.cells;
-    gameState = JSON.stringify(gameState);
-    connection.send(gameState);
+  //   var uniqid = String(Date.now());
+  //   if (games.uniqid){
+  //     games.uniqid.push(connection);
+  //   } else {
+  //     games.uniqid = [connection];
+  //   }
+  //   console.log(games);
 
-    connection.on('message', function(message) {
-      var data = JSON.parse(message);
-      if (data.instruction == "move"){
-        self.move(data.direction);
-        data.newTile = self.newTile;
-        message = JSON.stringify(data);
-      } else if (data.instruction == "restart"){
-        self.restart();
-        data.cells = self.grid.cells;
-        message = JSON.stringify(data);
-      } else if (data.instruction == "keepPlaying"){
-        self.keepGoing();
-      }
+  //   // SEND STATE
+  //   var gameState = {};
+  //   gameState.instruction = "loadGame";
+  //   gameState.score = self.score;
+  //   gameState.cells = self.grid.cells;
+  //   gameState = JSON.stringify(gameState);
+  //   connection.send(gameState);
+
+  //   connection.on('message', function(message) {
+  //     var data = JSON.parse(message);
+  //     if (data.instruction == "move"){
+  //       self.move(data.direction);
+  //       data.newTile = self.newTile;
+  //       message = JSON.stringify(data);
+  //     } else if (data.instruction == "restart"){
+  //       self.restart();
+  //       data.cells = self.grid.cells;
+  //       message = JSON.stringify(data);
+  //     } else if (data.instruction == "keepPlaying"){
+  //       self.keepGoing();
+  //     }
       
-      self.forEachClient(function(connection){
-        connection.send(message);
-      });
-      console.log(message);
+  //     self.forEachClient(function(connection){
+  //       connection.send(message);
+  //     });
+  //     console.log(message);
 
-    });
+  //   });
 
-    connection.on('close', function() {
-      console.log((new Date()) + ' Peer disconnected.');
-    });
-  });
+  //   connection.on('close', function() {
+  //     console.log((new Date()) + ' Peer disconnected.');
+  //     games.uniqid.pop(connection);
+  //   });
+  // });
 
   this.actuate();
 

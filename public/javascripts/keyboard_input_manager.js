@@ -1,4 +1,5 @@
 function KeyboardInputManager(websocket) {
+  this.game_id = document.getElementsByName("game_id")[0].content;
   this.events = {};
   this.ws = websocket;
   this.listen();
@@ -46,12 +47,13 @@ KeyboardInputManager.prototype.listen = function () {
       if (mapped !== undefined) {
         event.preventDefault();
         var data = {
+          game_id : self.game_id,
           instruction : "move",
           direction : mapped,
         }
         var message = JSON.stringify(data);
         if (self.ws && self.ws.readyState == 1){
-          self.ws.send(message);  
+          self.ws.send(message); 
         }
       }
 
@@ -61,6 +63,7 @@ KeyboardInputManager.prototype.listen = function () {
 
   var instructRestart = function(event){
     var data = {};
+    data.game_id = self.game_id;
     data.instruction = "restart";
     var message = JSON.stringify(data);
     self.ws.send(message);
@@ -68,6 +71,7 @@ KeyboardInputManager.prototype.listen = function () {
 
   var instructKeepPlaying = function(event){
     var data = {};
+    data.game_id = self.game_id;
     data.instruction = "keepPlaying";
     var message = JSON.stringify(data);
     self.ws.send(message);

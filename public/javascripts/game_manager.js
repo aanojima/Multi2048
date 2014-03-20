@@ -3,6 +3,7 @@ function GameManager(size, InputManager, Actuator, ScoreManager) {
   // var ws = new WebSocket("ws://localhost:5000");
   var ws = new WebSocket("ws://multi2048.herokuapp.com");
 
+  this.game_id      = document.getElementsByName("game_id")[0].content;
   this.size         = size; // Size of the grid
   this.inputManager = new InputManager(ws);
   this.scoreManager = new ScoreManager;
@@ -16,9 +17,17 @@ function GameManager(size, InputManager, Actuator, ScoreManager) {
 
   var self = this;
 
+  ws.onopen = function(){
+    var initialData = {
+      instruction : "loadGame",
+      game_id : self.game_id
+    }
+    var initialMessage = JSON.stringify(initialData);
+    this.send(initialMessage);
+  }
+
   ws.onmessage = function(response){
     var data = JSON.parse(response.data);
-    console.log(data);
     if (data.instruction == "loadGame"){
       var cells = data.cells;
       var score = data.score;
@@ -56,6 +65,10 @@ function GameManager(size, InputManager, Actuator, ScoreManager) {
       self.inputManager.emit("keepPlaying");
     }
   };
+
+  ws.onclose = function(){
+
+  }
 }
 
 // Restart the game

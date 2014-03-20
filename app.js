@@ -31,7 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(app.router);
 
 // app.use(express.static(__dirname + '/'));
-app.get('/', routes.index);
+app.get('/:id', routes.index);
 
 /// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {
@@ -70,6 +70,72 @@ console.log('Server is listening on port %d', port);
 var wss = new WebSocketServer({server: server});
 console.log('websocket server created');
 
-var gm = new GameManager(4, wss);
+var clients = {};
+var games = {};
+
+function forEachClient(game_id, callback){
+  if (clients[game_id]){
+    var game_clients = clients[game_id];
+    for (var i = 0; i < game_clients.length; i++){
+      callback(game_clients[i]);
+    }
+  }
+}
+
+wss.on('connection', function(ws) {
+
+    var connection = ws;
+    console.log((new Date()) + ' Connection accepted.');
+    var connection_id;
+
+    connection.on('message', function(message) {
+      var data = JSON.parse(message);
+      var game_id = data.game_id;
+      var game_manager = games[game_id];
+      if (data.instruction == "loadGame"){
+        if (games[data.game_id] && clients[game_id]){
+          game_manager = games[game_id];
+          clients[game_id].push(connection);
+        } else {
+          game_manager = new GameManager(game_id, 4);
+          games[game_id] = game_manager;
+          clients[game_id] = [connection];
+        }
+        data.score = game_manager.score;
+        data.cells = game_manager.grid.cells;
+        message = JSON.stringify(data);
+      } else if (data.instruction == "move"){
+        game_manager.move(data.direction);
+        data.newTile = game_manager.newTile;
+        message = JSON.stringify(data);
+      } else if (data.instruction == "restart"){
+        game_manager.restart();
+        data.cells = game_manager.grid.cells;
+        message = JSON.stringify(data);
+      } else if (data.instruction == "keepPlaying"){
+        game_manager.keepGoing();
+      }
+      if (data.instruction == "loadGame"){
+        connection.send(message);
+        connection_id = game_id;
+      } else {
+        forEachClient(game_id, function(client){
+          client.send(message);
+        });  
+      }
+
+    });
+
+    connection.on('close', function() {
+      console.log((new Date()) + ' Peer disconnected.');
+      clients[connection_id].pop(connection);
+      if (clients[connection_id].length == 0){
+        delete clients[connection_id];
+        delete games[connection_id];
+      }
+    });
+});
+
+// var gm = new GameManager(4, wss);
 
 module.exports = app;
