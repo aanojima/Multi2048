@@ -10,6 +10,10 @@ html, body {
 body {
   margin: 20px 0; }
 
+.heading {
+  text-align : center;
+}
+
 .heading:after {
   content: "";
   display: block;
@@ -146,7 +150,7 @@ hr {
     opacity: 1; } }
 
 .game-container {
-  margin-top: 40px;
+  /*margin-top: 40px;*/
   position: relative;
   padding: 15px;
   cursor: default;
@@ -676,7 +680,8 @@ hr {
     transform: translate(202px, 202px); }
 
   .game-container {
-    margin-top: 20px; }
+    /*margin-top: 20px; */
+  }
 
   .tile .tile-inner {
     font-size: 35px; }
