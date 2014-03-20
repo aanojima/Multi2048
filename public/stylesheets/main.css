@@ -20,7 +20,8 @@ h1.title {
   font-weight: bold;
   margin: 0;
   display: block;
-  float: left; }
+  /*float: left; */
+}
 
 @-webkit-keyframes move-up {
   0% {
@@ -50,8 +51,9 @@ h1.title {
     opacity: 0; } }
 
 .scores-container {
-  float: right;
-  text-align: right; }
+  /*float: right;*/
+  /*text-align : center;*/
+}
 
 .score-container, .best-container {
   position: relative;
@@ -485,7 +487,9 @@ hr {
   animation-fill-mode: backwards; }
 
 .game-intro {
-  margin-bottom: 0; }
+  margin : 10px;
+  /*margin-bottom: 0; */
+}
 
 .game-explanation {
   margin-top: 50px; }
@@ -512,10 +516,11 @@ hr {
     min-width: 40px; }
 
   .heading {
+    text-align : center;
     margin-bottom: 10px; }
 
   .game-container {
-    margin-top: 40px;
+    /*margin-top: 40px;*/
     position: relative;
     padding: 10px;
     cursor: default;
