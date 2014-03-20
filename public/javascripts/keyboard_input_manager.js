@@ -74,12 +74,12 @@ KeyboardInputManager.prototype.listen = function () {
   }
 
   var retry = document.querySelector(".retry-button");
-  // retry.addEventListener("click", this.restart.bind(this));
+  retry.addEventListener("click", this.restart.bind(this));
   retry.addEventListener("click", instructRestart)
   retry.addEventListener("touchend", instructRestart);
 
   var keepPlaying = document.querySelector(".keep-playing-button");
-  // keepPlaying.addEventListener("click", this.keepPlaying.bind(this));
+  keepPlaying.addEventListener("click", this.keepPlaying.bind(this));
   keepPlaying.addEventListener("click", instructKeepPlaying);
   keepPlaying.addEventListener("touchend", instructKeepPlaying);
 

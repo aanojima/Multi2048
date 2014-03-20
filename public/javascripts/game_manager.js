@@ -1,5 +1,3 @@
-var check;
-
 function GameManager(size, InputManager, Actuator, ScoreManager) {
   // var ws = new WebSocket("ws://athena.dialup.mit.edu:8080", "instruction-protocol");
   // var ws = new WebSocket("ws://localhost:5000");
@@ -18,10 +16,6 @@ function GameManager(size, InputManager, Actuator, ScoreManager) {
 
   var self = this;
 
-  check = function(){
-    return ws.readyState;
-  }
-
   ws.onmessage = function(response){
     var data = JSON.parse(response.data);
     console.log(data);
@@ -29,6 +23,22 @@ function GameManager(size, InputManager, Actuator, ScoreManager) {
       var cells = data.cells;
       var score = data.score;
       self.restore(cells, score);
+      if (!self.movesAvailable()) {
+        self.over = true; // Game over!
+        self.actuate(); // Restart Menu
+      } else {
+        for (var i = 0; i < self.size; i++){
+          for (var j = 0; j < self.size; j++){
+            if (self.grid.cells[i][j].value >= 2048){
+              self.won = true; // Already Won
+              break;
+            }
+          }
+        }
+        if (self.won){
+          self.actuate(); // Keep Playing vs. Try Again Menu
+        }
+      }
     } else if (data.instruction == "move"){
       // move      
       var newTile = data.newTile;
