@@ -105,7 +105,7 @@ KeyboardInputManager.prototype.listen = function () {
   });
 
   gameContainer.addEventListener("touchend", function (event) {
-    
+
     if (event.touches.length > 0) return;
 
     var dx = event.changedTouches[0].clientX - touchStartClientX;
@@ -113,7 +113,7 @@ KeyboardInputManager.prototype.listen = function () {
 
     var dy = event.changedTouches[0].clientY - touchStartClientY;
     var absDy = Math.abs(dy);
-    alert("fire");
+    alert(Math.max(absDx, absDy) > 10);
     if (Math.max(absDx, absDy) > 10) {
       // (right : left) : (down : up)
       self.emit("move", absDx > absDy ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0));
