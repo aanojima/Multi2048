@@ -1,9 +1,11 @@
 function GameManager(size, InputManager, Actuator, ScoreManager) {
-  // var ws = new WebSocket("ws://athena.dialup.mit.edu:8080", "instruction-protocol");
-  // var ws = new WebSocket("ws://localhost:5000");
-  var ws = new WebSocket("ws://multi2048.herokuapp.com");
 
   this.game_id      = document.getElementsByName("game_id")[0].content;
+
+  // var ws = new WebSocket("ws://athena.dialup.mit.edu:8080", "instruction-protocol");
+  // var ws = new WebSocket("ws://localhost:5000", this.game_id);
+  var ws = new WebSocket("ws://multi2048.herokuapp.com");
+
   this.size         = size; // Size of the grid
   this.inputManager = new InputManager(ws);
   this.scoreManager = new ScoreManager;
@@ -23,7 +25,16 @@ function GameManager(size, InputManager, Actuator, ScoreManager) {
       game_id : self.game_id
     }
     var initialMessage = JSON.stringify(initialData);
-    this.send(initialMessage);
+    ws.send(initialMessage);
+    function rePing(){
+      var data = {
+        instruction : "ping"
+      };
+      var message = JSON.stringify(data);
+      ws.send(message);
+      setTimeout(rePing, 10000);
+    }
+    rePing();
   }
 
   ws.onmessage = function(response){

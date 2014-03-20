@@ -7,7 +7,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var routes = require('./routes');
-var users = require('./routes/user');
 
 // var WebSocketServer = require('websocket').server;
 var WebSocketServer = require('ws').Server;
@@ -20,6 +19,7 @@ var port = process.env.PORT || 5000;
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+app.locals({ layout: false });
 
 app.use(favicon());
 app.use(logger('dev'));
@@ -31,7 +31,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(app.router);
 
 // app.use(express.static(__dirname + '/'));
-app.get('/:id', routes.index);
+app.get('/game/:id', routes.game);
+app.get('/', routes.select);
 
 /// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {
@@ -86,44 +87,50 @@ wss.on('connection', function(ws) {
 
     var connection = ws;
     console.log((new Date()) + ' Connection accepted.');
-    var connection_id;
+    var connection_id = connection.protocol;
+    console.log(connection_id);
 
     connection.on('message', function(message) {
       var data = JSON.parse(message);
       var game_id = data.game_id;
-      var game_manager = games[game_id];
       if (data.instruction == "loadGame"){
-        if (games[data.game_id] && clients[game_id]){
+        var game_manager;
+        if (games[data.game_id] && clients[connection_id]){
           game_manager = games[game_id];
-          clients[game_id].push(connection);
+          clients[connection_id].push(connection);
         } else {
           game_manager = new GameManager(game_id, 4);
           games[game_id] = game_manager;
-          clients[game_id] = [connection];
+          clients[connection_id] = [connection];
         }
         data.score = game_manager.score;
         data.cells = game_manager.grid.cells;
         message = JSON.stringify(data);
       } else if (data.instruction == "move"){
+        var game_manager = games[game_id];
         game_manager.move(data.direction);
         data.newTile = game_manager.newTile;
         message = JSON.stringify(data);
       } else if (data.instruction == "restart"){
+        var game_manager = games[game_id];
         game_manager.restart();
         data.cells = game_manager.grid.cells;
         message = JSON.stringify(data);
       } else if (data.instruction == "keepPlaying"){
+        var game_manager = games[game_id];
         game_manager.keepGoing();
+      } else if (data.instruction == "ping"){
+        data.instruction = "pong";
+        message = JSON.stringify(data);
       }
-      if (data.instruction == "loadGame"){
+
+      if (data.instruction == "loadGame" || data.instruction == "pong"){
         connection.send(message);
-        connection_id = game_id;
       } else {
         forEachClient(game_id, function(client){
           client.send(message);
         });  
       }
-
     });
 
     connection.on('close', function() {

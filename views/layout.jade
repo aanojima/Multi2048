@@ -13,55 +13,24 @@ head
 	meta(name="HandheldFriendly", content="True")
 	meta(name="MobileOptimized", content="320")
 	meta(name="viewport", content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui")
-body
-	input(type="hidden", value="#{game_id}")
-	div.container
-		div.heading
-			h1.title 2048 Co-Op
-			h1.title Game #{game_id}
-			div.scores-container
-				div.score-container 0
-				div.best-container 0
-		p.game-intro Play alongside other users and join the numbers and get to the <strong>2048 tile!</strong>
-
-		div.game-container
-			div.game-message
-				p
-				div.lower
-					a.keep-playing-button Keep going
-					a.retry-button Try again
+	script.
+		var blah = setInterval(function(){
+			if (document.readyState == "complete"){
+				clearInterval(blah);
+				var submit = document.getElementById("new_game_form");
+				submit.addEventListener("submit", function(event){
+					event.preventDefault();
+					var text = document.getElementById("game_id_text").value;
+					window.location.href = "game/" + text;
+				});	
+			}
+		});
 			
-			div.grid-container
-				div.grid-row
-					div.grid-cell
-					div.grid-cell
-					div.grid-cell
-					div.grid-cell
-				div.grid-row
-					div.grid-cell
-					div.grid-cell
-					div.grid-cell
-					div.grid-cell
-				div.grid-row
-					div.grid-cell
-					div.grid-cell
-					div.grid-cell
-					div.grid-cell
-				div.grid-row
-					div.grid-cell
-					div.grid-cell
-					div.grid-cell
-					div.grid-cell
-			div.tile-container
-
-		p.game-explanation <strong class="important">How to play:</strong> Use your <strong>arrow keys</strong> to move the tiles. Anyone playing on this website can control the same game.  When two tiles with the same number touch, they <strong>merge into one! </strong>
-		p.game-explanation Have Fun!  -Noj
-		hr
-	script(src="javascripts/animframe_polyfill.js")
-	script(src="javascripts/keyboard_input_manager.js")
-	script(src="javascripts/html_actuator.js")
-	script(src="javascripts/grid.js")
-	script(src="javascripts/tile.js")
-	script(src="javascripts/local_score_manager.js")
-	script(src="javascripts/game_manager.js")
-	script(src="javascripts/application.js")
+body(style="text-align:center")
+	div(style="text-align:center;height:100px")
+		h1(style="font-size:72px") 2048 Co-Op
+	form(name="game_id", id="new_game_form" style="margin-bottom:50px")
+		label Find An Existing Game or Create New Game: 
+		input(type="text", id="game_id_text")
+		button(type="submit") Go!
+	img(src="/images/main_image.png", style="width:400px;height:400px")

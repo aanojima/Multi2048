@@ -52,6 +52,7 @@ KeyboardInputManager.prototype.listen = function () {
           direction : mapped,
         }
         var message = JSON.stringify(data);
+
         if (self.ws && self.ws.readyState == 1){
           self.ws.send(message); 
         }
@@ -115,6 +116,13 @@ KeyboardInputManager.prototype.listen = function () {
     if (Math.max(absDx, absDy) > 10) {
       // (right : left) : (down : up)
       self.emit("move", absDx > absDy ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0));
+      var data = {
+        instruction : "move",
+        game_id : self.game_id,
+        direction : absDx > absDy ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0),
+      }
+      var message = JSON.stringify(data);
+      self.ws.send(message);
     }
   });
 };
