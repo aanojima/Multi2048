@@ -113,10 +113,10 @@ KeyboardInputManager.prototype.listen = function () {
 
     var dy = event.changedTouches[0].clientY - touchStartClientY;
     var absDy = Math.abs(dy);
-    alert(Math.max(absDx, absDy) > 10);
+    
     if (Math.max(absDx, absDy) > 10) {
       // (right : left) : (down : up)
-      self.emit("move", absDx > absDy ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0));
+      // self.emit("move", absDx > absDy ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0));
       var data = {
         instruction : "move",
         game_id : self.game_id,
